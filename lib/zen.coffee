@@ -140,7 +140,7 @@ module.exports =
           response.page "404", undefined, undefined, 404
 
       @server.timeout = ZEN.timeout or CONST.TIMEOUT
-      @server.listen ZEN.port
+      @server.listen process.env.PORT || ZEN.port
       do @handleProcess
       @server
 
