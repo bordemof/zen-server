@@ -38,7 +38,8 @@
     "js-yaml": "*",
     "mongoose": "*",
     "mustache": "*",
-    "redis": "*"
+    "redis": "*", 
+    "nodemailer":"0.7.1"
   },
   "main": "./zen.proxy.js",
   "engines": {
