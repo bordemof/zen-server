@@ -23,6 +23,7 @@ CONST         = require "./zen.constants"
 appnima       = require "./services/appnima" if ZEN.appnima?
 mongo         = require "./services/mongo" if ZEN.mongo?
 redis         = require "./services/redis" if ZEN.redis?
+mailer        = require "./services/mailer" if ZEN.mailer?
 # -- Middlewares
 request       = require "./middlewares/request"
 firewall      = require "./middlewares/firewall" if ZEN.firewall?
@@ -46,7 +47,6 @@ module.exports =
         process.exit() if error
         ZEN.br()
         console.log " Listening at :#{ZEN.port}", "(CTRL + C to shutdown)".grey
-        ZEN.br()
         @
 
     use: (callback, system = false) =>
@@ -197,14 +197,14 @@ module.exports =
     services: ->
       promise = new Hope.Promise()
       tasks = []
-      if ZEN.mongo? or ZEN.redis? or ZEN.appnima
+      if ZEN.mongo? or ZEN.redis? or ZEN.mailer?
         ZEN.br "SERVICES"
         for connection in (ZEN.mongo or [])
           tasks.push do (connection) -> -> mongo.open connection
         if ZEN.redis?
           tasks.push => redis.open ZEN.redis
-        if ZEN.appnima
-          tasks.push => appnima.open ZEN.appnima
+        if ZEN.mailer?
+          tasks.push => mailer.open ZEN.mailer
 
       if tasks.length > 0
         Hope.shield(tasks).then (error, value) =>
@@ -240,11 +240,11 @@ __server = ->
     http.createServer()
 
 __serverClose = ->
-  console.log ""
   ZEN.br "ZENserver shutdown..."
   if ZEN.mongo? then mongo.close()
   if ZEN.redis? then redis.close()
-  console.log " ✓".green, "shutdown ok!".grey
+  if ZEN.mailer?then mailer.close()
+  console.log "✓".green, " Zen shutdown ok!".grey
   ZEN.br()
 
 __cast = (values) ->
