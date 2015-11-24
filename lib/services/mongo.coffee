@@ -21,18 +21,20 @@ module.exports =
     if connection.user and connection.password
       url = connection.user + ":" + connection.password + "@" + url
 
+
     @connections[connection.name] = mongoose.createConnection "mongodb://#{url}"
     @connections[connection.name].on "error", (error) ->
-      console.log " ⚑".red, "Error connection:".grey, error.red
+      console.log "⚑".red, "Error connection:".grey, error.red
 
       promise.done true, null
       process.exit()
     @connections[connection.name].on "connected", (error) ->
-      console.log " ✓".green, "MongoDB:#{connection.name}", "listening at".grey, "#{connection.host}:#{connection.port}/#{connection.db}".underline.blue
+      console.log "✓".green, "MongoDB:#{connection.name}", "connected at".grey, "#{connection.host}/#{connection.db}".underline.green
       promise.done null, true
+
     promise
 
   close: ->
     for name of @connections
       @connections[name].close ->
-        console.log " ✓".green, "MongoDB:/#{name}", "closed connection correctly.".grey
+        console.log "✓".green, "MongoDB:/#{name}", "closed connection correctly.".grey
