@@ -7,7 +7,7 @@ module.exports = {
     // Services
     Mongo       : require("./lib/services/mongo"),
     Redis       : require("./lib/services/redis"),
-    Appnima     : require("./lib/services/appnima"),
+    Mailer      : require("./lib/services/mailer"),
     // Facade
     Mongoose    : require("mongoose"),
     Hope        : require("hope"),
