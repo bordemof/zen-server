@@ -23,15 +23,17 @@ Redis =
       console.log " ⚑".red, "Error connection:".grey, error.red
       promise.done error, null
     @client.on "connect", =>
-      console.log " ✓".green, "Redis", "listening at".grey, "#{@host}:#{@port}".underline.blue
+      console.log "✓".green, "Redis", "listening at".grey, "#{@host}:#{@port}".underline.green
       promise.done null, true
     promise
 
   close: ->
-    console.log " ✓".green, "Redis", "closed connection correctly.".grey
+    console.log "✓".green, "Redis", "closed connection correctly.".grey
     do @client.quit
 
   set: (key, value) -> @client.SET String(key), value
+
+  push: (key, value) -> @client.RPUSH String(key), value
 
   json: (key, value) -> @client.SET String(key), JSON.stringify value
 
@@ -54,6 +56,24 @@ Redis =
 
   multi: (actions, callback) ->
     @client.multi(actions).exec callback
+
+  length: (key, callback) ->
+    @client.LLEN key, (error, result) ->
+      callback error, result
+
+  rpop: (key, callback) ->
+    @client.RPOP key, (error, result) ->
+      result = JSON.parse result if result?
+      callback error, result
+
+  lrange: (key, i, j, callback) ->
+    @client.LRANGE key, [i,j], (error, result) ->
+      result = JSON.parse result if result?
+      callback error, result
+
+  exist: (key, callback) ->
+    @client.EXISTS key, (error, result) ->
+      callback error, result
 
   get: (key, callback) ->
     @client.GET key, (error, result) ->
